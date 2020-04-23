@@ -40,7 +40,7 @@ var inputData = {
   }
   
   var expectedData = [];
-
+  var formatingValue = [];
   var lengthOftheValue = inputData.dimensions[0].values.length;
   for(i=0; i< lengthOftheValue; i++){
       expectedData.push({
@@ -51,22 +51,55 @@ var inputData = {
         "Profit": inputData.meaures[2].values[i]
       });
   }
-  console.log(expectedData);
-  var formatingValue;
-  inputData.metadata[0].forEach((element, index) => {
-    formatingValue.push({
-        name: element.name,
-        values: inputData
-    });
-    //   expectedData.push({
-    //     "Region": element.dimensions.,
-    //     "County": "London",
-    //     "Sales": 100,
-    //     "Quantity": 85,
-    //     "Profit": 123
-    //   });
-    getData(element.id);
-  });
-  function getData(){
 
+
+  
+  // console.log("expectedData", expectedData);
+  console.log("inputData", inputData);
+
+  Object.entries(inputData).forEach(([key1, value1]) => {
+    if(key1 == "metadata"){
+      Object.entries(value1).forEach(([key2, value2]) => {
+        // console.log(key2, value2);
+        formatingValue.push({
+            name: value2.label,
+            values: getData(value2.id)
+        });
+      })
     }
+    
+  });
+  // console.log("formatingValue",formatingValue);
+  function getData(filterName){
+    var data;
+    Object.entries(inputData).forEach(([key1, value1]) => {
+      if(key1 != "metadata"){
+        Object.entries(value1).forEach(([key2, value2]) => {
+          
+          if(filterName == value2.id){
+            // console.log("filtered:",filterName, value2.values);
+            data = value2.values;
+            return;
+          }
+        })
+      }
+    });
+    return data;
+  }
+  expectedDataFormating();
+ function expectedDataFormating(){
+   var data = []; 
+   var datalength = formatingValue[0].values.length;
+   var keyValue = [];
+   Object.entries(formatingValue).forEach(([key, value]) => {
+    keyValue.push(value.name);    
+  })
+  for(i=0; i< lengthOftheValue; i++){
+    Object.entries(keyValue).forEach(([key2, keyValue]) => {
+      Object.assign(expectedData[i], {[keyValue]: formatingValue[key2].values[i]});
+    })
+    
+}
+  console.log("expectedData", expectedData);
+  
+  }
